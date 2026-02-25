@@ -23,7 +23,7 @@
 
 <script>
     // PASTE YOUR GOOGLE DEPLOYMENT URL HERE
-    const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx_oWJ0J_mb7bms0L-273CGsWW_6n6Gjk5qAnyrVzu1g1VNM7kxjJrvATGRGL-mFRCGAA/exec';
     let isSignup = true;
 
     function toggleMode() {
@@ -32,21 +32,37 @@
         document.getElementById('mainBtn').innerText = isSignup ? "Create Account" : "Login";
     }
 
-    function submitForm(action) {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const currentAction = isSignup ? 'signup' : 'login';
+    function submitForm() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const currentAction = isSignup ? 'signup' : 'login';
+    const msgBox = document.getElementById('msg');
 
-        fetch(`${scriptURL}?action=${currentAction}&email=${email}&password=${password}`, { method: 'POST' })
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('msg').innerText = data;
-                if(data === "Login Successful") {
-                    alert("Welcome! You are now logged in.");
-                }
-            })
-            .catch(error => console.error('Error!', error.message));
-    }
+    msgBox.innerText = "Processing...";
+
+    // We use a GET request here for simplicity with Google Apps Script web apps
+    fetch(`${scriptURL}?action=${currentAction}&email=${email}&password=${password}`, { method: 'POST' })
+        .then(res => res.text())
+        .then(data => {
+            msgBox.innerText = data;
+
+            if (data.trim() === "Login Successful") {
+                // 1. Save the user's email so the dashboard knows who they are
+                localStorage.setItem("userEmail", email);
+                
+                // 2. Redirect to your dashboard file
+                // If your dashboard is a separate file named dashboard.html:
+                window.location.href = "dashboard.html"; 
+            } else if (data.trim() === "Signup Successful") {
+                alert("Account created! Please log in now.");
+                toggleMode(); // Switch them to the login screen automatically
+            }
+        })
+        .catch(error => {
+            msgBox.innerText = "Error connecting to database.";
+            console.error('Error!', error.message);
+        });
+}
 </script>
 
 </body>

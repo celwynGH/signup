@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Dashboard</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
+        .card { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button { background: #ff4b2b; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Welcome to your Dashboard!</h1>
+        <p>Logged in as: <strong id="user-display"></strong></p>
+        <hr>
+        <p>This is your private area.</p>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // SECURITY CHECK: If no user is found in localStorage, kick them back to login
+        const user = localStorage.getItem("userEmail");
+        
+        if (!user) {
+            alert("Access Denied. Please login first.");
+            window.location.href = "index.html"; // Replace with your login filename
+        } else {
+            document.getElementById("user-display").innerText = user;
+        }
+
+        function logout() {
+            localStorage.removeItem("userEmail"); // Clear the "session"
+            window.location.href = "index.html"; // Back to login
+        }
+    </script>
+
+</body>
+</html>
